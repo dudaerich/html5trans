@@ -53,7 +53,7 @@ mzk.html5trans.webgl.MixingTransformation.prototype.fromMetersToPixel =
   var x_ = goog.math.lerp(fromA.x, fromB.x, this.mix);
   var y_ = goog.math.lerp(fromA.y, fromB.y, this.mix);
 
-  return new google.maps.Point(x_, y_);
+  return new goog.math.Coordinate(x_, y_);
 };
 
 

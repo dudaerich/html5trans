@@ -53,7 +53,7 @@ mzk.html5trans.math.Spline2D = function(data,
   this.numPoints = data.length;
 
   /**
-   * @type {!Array.<number>}
+   * @type {!Array.<!Array.<!number>>}
    * @private
    */
   this.coef_ = [];

@@ -52,7 +52,7 @@ goog.inherits(mzk.html5trans.transforms.TPS,
 mzk.html5trans.transforms.TPS.prototype.fromMetersToPixel = function(meters) {
   var a = this.fromGeo.getPoint(meters.x, meters.y);
 
-  return new google.maps.Point(a[0], a[1]);
+  return new goog.math.Coordinate(a[0], a[1]);
 };
 
 

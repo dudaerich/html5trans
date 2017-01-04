@@ -1,0 +1,22 @@
+{
+  "name": "html5trans",
+  "version": "1.0.0",
+  "description": "html5trans ==========",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/moravianlibrary/html5trans.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/moravianlibrary/html5trans/issues"
+  },
+  "homepage": "https://github.com/moravianlibrary/html5trans#readme",
+  "dependencies": {
+    "openlayers": "v3.16.0"
+  }
+}

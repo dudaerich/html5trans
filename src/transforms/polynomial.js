@@ -49,7 +49,7 @@ mzk.html5trans.transforms.Polynomial.prototype.fromMetersToPixel =
   var x_ = a[0] + a[1] * x + a[2] * y + a[3] * x2 + a[4] * xy + a[5] * y2;
   var y_ = a[6] + a[7] * x + a[8] * y + a[9] * x2 + a[10] * xy + a[11] * y2;
 
-  return new google.maps.Point(x_, y_);
+  return new goog.math.Coordinate(x_, y_);
 };
 
 

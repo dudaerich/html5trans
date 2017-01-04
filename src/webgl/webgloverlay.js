@@ -13,6 +13,8 @@ goog.require('goog.style');
 goog.require('mzk.html5trans.math.geo');
 goog.require('mzk.html5trans.webgl.Plane');
 
+goog.require('ol.Overlay');
+
 
 
 /**
@@ -24,7 +26,7 @@ goog.require('mzk.html5trans.webgl.Plane');
  * @param {number=} opt_addDebugLines .
  * @param {!HTMLCanvasElement=} opt_canvas Canvas to use instead of a new one.
  * @constructor
- * @extends {google.maps.OverlayView}
+ * @extends {ol.Overlay}
  */
 mzk.html5trans.webgl.WebGLOverlay = function(image, transformation,
                                              opt_cutline, opt_points,
@@ -144,7 +146,7 @@ mzk.html5trans.webgl.WebGLOverlay = function(image, transformation,
    */
   this.zooming_ = false;
 };
-goog.inherits(mzk.html5trans.webgl.WebGLOverlay, google.maps.OverlayView);
+goog.inherits(mzk.html5trans.webgl.WebGLOverlay, ol.Overlay);
 
 
 /**

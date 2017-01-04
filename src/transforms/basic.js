@@ -67,7 +67,7 @@ mzk.html5trans.transforms.Basic.prototype.fromMetersToPixel = function(meters) {
   var x_ = (meters.x - this.bbox_[0]) / this.scaleX_;
   var y_ = (meters.y - this.bbox_[3]) / this.scaleY_;
 
-  return new google.maps.Point(x_, y_);
+  return new goog.math.Coordinate(x_, y_);
 };
 
 

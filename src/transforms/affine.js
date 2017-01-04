@@ -88,13 +88,13 @@ mzk.html5trans.transforms.Affine.prototype.fromMetersToPixel =
   var x_ = (E * meters.x - B * meters.y + B * F - C * E) / determinant;
   var y_ = (-D * meters.x + A * meters.y + C * D - A * F) / determinant;
 
-  return new google.maps.Point(x_, y_);
+  return new goog.math.Coordinate(x_, y_);
 };
 
 
 /**
- * @param {!google.maps.Point} point .
- * @return {!google.maps.LatLng} LatLng.
+ * @param {!goog.math.Coordinate} point .
+ * @return {!goog.math.Coordinate} LatLng.
  */
 mzk.html5trans.transforms.Affine.prototype.fromPixelToLatLng =
     function(point) {
@@ -105,7 +105,7 @@ mzk.html5trans.transforms.Affine.prototype.fromPixelToLatLng =
   var y__ = (y_ / mzk.html5trans.math.geo.EARTH_RADIUS);
   y__ = 2 * Math.atan(Math.exp(y__)) - Math.PI / 2;
 
-  return new google.maps.LatLng(y__ / Math.PI * 180, x__ / Math.PI * 180);
+  return new goog.math.Coordinate(x__ / Math.PI * 180, y__ / Math.PI * 180);
 };
 
 

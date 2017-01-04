@@ -8,6 +8,7 @@
 goog.provide('mzk.html5trans.transforms.Transformation');
 
 goog.require('mzk.html5trans.math.geo');
+goog.require('goog.math.Coordinate');
 
 
 
@@ -34,7 +35,7 @@ mzk.html5trans.transforms.Transformation.prototype.getVertexShader =
 
 /**
  * @param {!goog.math.Coordinate} meters .
- * @return {!google.maps.Point} Pixel coordinates in the overlay image.
+ * @return {!goog.math.Coordinate} Pixel coordinates in the overlay image.
  */
 mzk.html5trans.transforms.Transformation.prototype.fromMetersToPixel =
     goog.abstractMethod;
@@ -44,8 +45,8 @@ mzk.html5trans.transforms.Transformation.prototype.fromMetersToPixel =
  * Inverse transformation needed:
  *   We need to determine which pixel will be transformed TO the given location.
  *
- * @param {!google.maps.LatLng} latlng .
- * @return {!google.maps.Point} Pixel coordinates in the overlay image.
+ * @param {!goog.math.Coordinate} latlng .
+ * @return {!goog.math.Coordinate} Pixel coordinates in the overlay image.
  */
 mzk.html5trans.transforms.Transformation.prototype.fromLatLngToPixel =
     function(latlng) {
@@ -54,14 +55,14 @@ mzk.html5trans.transforms.Transformation.prototype.fromLatLngToPixel =
 
 
 /**
- * @param {!google.maps.LatLng} latlng .
+ * @param {!goog.math.Coordinate} latlng .
  * @return {!goog.math.Coordinate} Easting and northing.
  */
 mzk.html5trans.transforms.Transformation.prototype.fromLatLngToMeters =
     function(latlng) {
 
-  var meters_ = mzk.html5trans.math.geo.LatLngToMeters(latlng.lat(),
-      latlng.lng());
+  var meters_ = mzk.html5trans.math.geo.LatLngToMeters(latlng.y,
+      latlng.x);
 
   return new goog.math.Coordinate(meters_[0], meters_[1]);
 };

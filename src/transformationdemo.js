@@ -11,6 +11,7 @@ goog.provide('mzk.html5trans.TransformationDemo.Button');
 goog.require('goog.dom');
 goog.require('goog.events');
 goog.require('goog.fx.Animation');
+goog.require('goog.fx.Transition');
 
 goog.require('mzk.html5trans.transforms.Affine');
 goog.require('mzk.html5trans.transforms.Basic');
@@ -19,10 +20,16 @@ goog.require('mzk.html5trans.transforms.TPS');
 goog.require('mzk.html5trans.webgl.WebGLOverlay');
 goog.require('mzk.html5trans.webgl.WebGLOverlayMix');
 
-
+goog.require('ol.Map');
+goog.require('ol.layer.Vector');
+goog.require('ol.style.Style');
+goog.require('ol.style.Icon');
+goog.require('ol.Feature');
+goog.require('ol.geom.Point');
+goog.require('ol.control.Control');
 
 /**
- * @param {!google.maps.Map} map .
+ * @param {!ol.Map} map .
  * @param {!HTMLImageElement} image .
  * @param {!Array.<number>} bbox [xmin, ymin, xman, ymax].
  * @param {!Array.<number>} affineTo The 6 parameters.
@@ -37,17 +44,19 @@ mzk.html5trans.TransformationDemo = function(map, image, bbox,
                                              affineTo, polyFrom, polyTo,
                                              points, opt_cutline) {
   /**
-   * @type {!google.maps.Map}
+   * @type {!ol.Map}
    * @private
    */
   this.map_ = map;
 
-  /*
-  this.map_.fitBounds(
-      new google.maps.LatLngBounds(
-        new google.maps.LatLng(bbox[1], bbox[0]),
-        new google.maps.LatLng(bbox[3], bbox[2])));
-  */
+  /**
+   * @type {!ol.layer.Vector}
+   */
+  this.vectorLayer_ = new ol.layer.Vector({
+    source: new ol.source.Vector()
+  });
+
+  this.map_.addLayer(this.vectorLayer_);
 
   /**
    * @type {!HTMLImageElement}
@@ -74,27 +83,27 @@ mzk.html5trans.TransformationDemo = function(map, image, bbox,
   this.oldMapPoints_ = [];
 
   /**
-   * @type {!Array.<!google.maps.Marker>}
+   * @type {!Array.<!ol.Feature>}
    * @private
    */
   this.newMapMarkers_ = [];
 
-  var icon = {
-      url: mzk.html5trans.TransformationDemo.PNG_MARKER,
-      size: new google.maps.Size(12, 12),
-      origin: new google.maps.Point(0, 0),
-      anchor: new google.maps.Point(6, 6)
-  }
+  var markerStyle = new ol.style.Style({
+    image: new ol.style.Icon({
+      src: mzk.html5trans.TransformationDemo.PNG_MARKER,
+      size: [12, 12],
+      anchor: [6, 6]
+    })
+  });
 
   goog.array.forEach(points, function(el, i, arr) {
     var meters = mzk.html5trans.math.geo.LatLngToMeters(el[0], el[1]);
     var gcp = [meters[0], meters[1], el[2], el[3]];
     this.points_.push(gcp);
 
-    var marker = new google.maps.Marker({
-      position: new google.maps.LatLng(el[0], el[1]),
-      icon: icon,
-      draggable: false
+    var marker = new ol.Feature({
+      type: 'marker',
+      geometry: new ol.geom.Point([el[0], el[1]])
     });
 
     this.newMapMarkers_.push(marker);
@@ -311,7 +320,7 @@ mzk.html5trans.TransformationDemo.prototype.animateTo_ =
         }, false, this);
 
     goog.events.listen(this.mixingAnimation_,
-        goog.fx.Animation.EventType.END, function(e) {
+        goog.fx.Transition.EventType.END, function(e) {
           this.currentTransformation_ = this.targetTransformation_;
           this.targetTransformation_ = null;
           this.currentOverlay_ = newOverlay;
@@ -373,7 +382,7 @@ mzk.html5trans.TransformationDemo.prototype.recreateOverlays_ =
 
   var map = this.usePoints_ ? this.map_ : null;
   goog.array.forEach(this.newMapMarkers_, function(el, i, arr) {
-    el.setMap(map);
+    this.vectorLayer_.getSource().addFeature(el);
   }, this);
 };
 
@@ -381,7 +390,7 @@ mzk.html5trans.TransformationDemo.prototype.recreateOverlays_ =
 
 /**
  * @param {number} transNum .
- * @param {!google.maps.Map} map .
+ * @param {!ol.Map} map .
  * @param {string} name .
  * @param {function(number) : boolean} onclick .
  * @constructor
@@ -389,7 +398,7 @@ mzk.html5trans.TransformationDemo.prototype.recreateOverlays_ =
 mzk.html5trans.TransformationDemo.Button = function(transNum, map,
                                                     name, onclick) {
   /**
-   * @type {!google.maps.Map}
+   * @type {!ol.Map}
    * @private
    */
   this.map_ = map;
@@ -408,28 +417,33 @@ mzk.html5trans.TransformationDemo.Button = function(transNum, map,
   /**
    * @type {!Element}
    */
-  this.control = goog.dom.createElement('div');
-  this.control.innerHTML = name;
+  this.controlEl_ = goog.dom.createElement('div');
+  this.controlEl_.innerHTML = name;
 
-  this.control.className = 'gmaps_button';
+  this.controlEl_.className = 'gmaps_button';
+
+  /**
+   * @type {!ol.control.Control}
+   */
+  this.control_ = new ol.control.Control({element: this.controlEl_});
 
   // Wait for the elements to load and then fixate the width to prevent
   //  size changing when setting fontWeight to bold.
   // Even 1 ms waiting time should be enough -- we need to let the events happen
   setTimeout(goog.bind(function() {
-    if (this.control.clientWidth > 0) {
-      this.control.style.padding = '1px 0';
-      this.control.style.width = (this.control.clientWidth + 16) + 'px';
+    if (this.controlEl_.clientWidth > 0) {
+      this.controlEl_.style.padding = '1px 0';
+      this.controlEl_.style.width = (this.controlEl_.clientWidth + 16) + 'px';
       // + 16 because of 2*8 padding compensation (see .css)
     }
   }, this), 500);
 
-  goog.events.listen(this.control, 'click', function() {
+  goog.events.listen(this.controlEl_, 'click', function() {
     if (onclick(this.transNum)) {
       this.setActive(true);
     }
   }, false, this);
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.control);
+  map.addControl(this.control_);
 };
 
 
@@ -453,7 +467,7 @@ mzk.html5trans.TransformationDemo.Button.prototype.isActive = function() {
 
 
 /**
- * @param {!google.maps.Map} map .
+ * @param {!ol.Map} map .
  * @param {boolean} state Initial checkbox state.
  * @param {string} name .
  * @param {function(boolean):boolean} onchange .
@@ -462,7 +476,7 @@ mzk.html5trans.TransformationDemo.Button.prototype.isActive = function() {
 mzk.html5trans.TransformationDemo.Checkbox = function(map, state,
                                                       name, onchange) {
   /**
-   * @type {!google.maps.Map}
+   * @type {!ol.Map}
    * @private
    */
   this.map_ = map;
@@ -477,13 +491,18 @@ mzk.html5trans.TransformationDemo.Checkbox = function(map, state,
   /**
    * @type {!Element}
    */
-  this.control = goog.dom.createDom('div', {'class': 'gmaps_checkbox'},
+  this.controlEl_ = goog.dom.createDom('div', {'class': 'gmaps_checkbox'},
                                     this.checkbox, name);
 
-  goog.events.listen(this.control, 'click', function(e) {
+  /**
+  * @type {!ol.control.Control}
+  */
+  this.control_ = new ol.control.Control({element: this.controlEl_});
+
+  goog.events.listen(this.controlEl_, 'click', function(e) {
     if (e.target != this.checkbox)
       this.checkbox.checked = !this.checkbox.checked;
     onchange(this.checkbox.checked);
   }, false, this);
-  map.controls[google.maps.ControlPosition.TOP_LEFT].push(this.control);
+  map.addControl(this.control_);
 };

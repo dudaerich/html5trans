@@ -27,7 +27,7 @@ goog.require('mzk.html5trans.webgl.WebGLOverlay');
 mzk.html5trans.webgl.WebGLOverlayMix = function(image, transA, transB,
                                                 opt_cutline, opt_points,
                                                 opt_addDebugLines, opt_canvas) {
-  goog.base(this,
+  mzk.html5trans.webgl.WebGLOverlayMix.base(this, 'constructor',
       image,
       new mzk.html5trans.webgl.MixingTransformation(transA, transB),
       opt_cutline, opt_points, opt_addDebugLines, opt_canvas);

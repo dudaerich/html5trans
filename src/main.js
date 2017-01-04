@@ -11,6 +11,11 @@ goog.require('goog.dom');
 
 goog.require('mzk.html5trans.TransformationDemo');
 
+goog.require('ol.Map');
+goog.require('ol.View');
+goog.require('ol.layer.Tile');
+goog.require('ol.source.OSM');
+
 
 
 /**
@@ -18,10 +23,17 @@ goog.require('mzk.html5trans.TransformationDemo');
  * @constructor
  */
 mzk.html5trans.Main = function(element) {
-  var map = new google.maps.Map(element, {
-    zoom: 7,
-    center: new google.maps.LatLng(50, 16),
-    mapTypeId: google.maps.MapTypeId.ROADMAP
+  var map = new ol.Map({
+    target: element,
+    layers: [
+      new ol.layer.Tile({
+        source: new ol.source.OSM()
+      })
+    ],
+    view: new ol.View({
+      center: [0, 0],
+      zoom: 4
+    })
   });
 
   var data = {
